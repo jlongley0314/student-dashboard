@@ -6,65 +6,49 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material/styles";
 import { Student } from "../types";
+import { useNavigate } from "react-router-dom";
 
 type StudentsTableProps = {
   students: Student[];
 };
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
 export function StudentsTable({ students }: StudentsTableProps) {
+  const navigate = useNavigate();
+
   function getDate(date: string) {
     let parsed = new Date(date);
     return parsed.toLocaleDateString("en-US");
   }
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 700 }} aria-label="customized table">
         <TableHead>
           <TableRow>
-            <StyledTableCell>Student ID #</StyledTableCell>
-            <StyledTableCell align="right">First Name</StyledTableCell>
-            <StyledTableCell align="right">Last Name</StyledTableCell>
-            <StyledTableCell align="right">Date of Birth</StyledTableCell>
+            <TableCell>Student ID #</TableCell>
+            <TableCell align="right">First Name</TableCell>
+            <TableCell align="right">Last Name</TableCell>
+            <TableCell align="right">Date of Birth</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {students.map((student: Student) => (
-            <StyledTableRow key={student.id}>
-              <StyledTableCell component="th" scope="row">
+            <TableRow
+              hover
+              key={student.id}
+              style={{ cursor: "pointer" }}
+              onClick={(event) => navigate(`/profile/${student.id}`)}
+            >
+              <TableCell component="th" scope="row">
                 {student.id}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {student.firstName}
-              </StyledTableCell>
-              <StyledTableCell align="right">
-                {student.lastName}
-              </StyledTableCell>
-              <StyledTableCell align="right">
+              </TableCell>
+              <TableCell align="right">{student.firstName}</TableCell>
+              <TableCell align="right">{student.lastName}</TableCell>
+              <TableCell align="right">
                 {getDate(student.dateOfBirth)}
-              </StyledTableCell>
-            </StyledTableRow>
+              </TableCell>
+            </TableRow>
           ))}
         </TableBody>
       </Table>
