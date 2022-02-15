@@ -1,8 +1,15 @@
 import React, { useState } from "react";
 import { Address } from "../types";
-import { Card, Typography, Stack, Button, TextField, Box } from "@mui/material";
+import {
+  Card,
+  Typography,
+  Stack,
+  Button,
+  TextField,
+  Box,
+  LinearProgress,
+} from "@mui/material";
 import { useEditAddress } from "../mutations/useEditAddress";
-import { useForm, Controller } from "react-hook-form";
 
 type StudentAddressColumnProps = {
   address: Address;
@@ -11,23 +18,20 @@ type StudentAddressColumnProps = {
 
 export function StudentAddressColumn(props: StudentAddressColumnProps) {
   const { address, id } = props;
-  const { register, handleSubmit } = useForm();
   const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState(address);
   const editAddressMutation = useEditAddress(id);
 
   function handleClick() {
     setIsEditing(!isEditing);
     if (isEditing) {
-      handleSubmit(submitAddress);
+      editAddressMutation.mutate(formData);
     }
-  }
-
-  function submitAddress() {
-    editAddressMutation.mutate();
   }
 
   return (
     <Card variant="outlined" style={{ padding: 10 }}>
+      {editAddressMutation.isLoading && <LinearProgress />}
       <Typography variant="h5" component="div" gutterBottom>
         Address:
       </Typography>
@@ -43,13 +47,48 @@ export function StudentAddressColumn(props: StudentAddressColumnProps) {
           <div>
             <TextField
               required
+              error={!formData.line1}
               label="Address Line 1"
               defaultValue={address.line1}
+              onChange={(event) => {
+                setFormData({ ...formData, line1: event.target.value });
+              }}
             />
-            <TextField label="Address Line 2" defaultValue={address.line2} />
-            <TextField required label="City" defaultValue={address.city} />
-            <TextField required label="State" defaultValue={address.state} />
-            <TextField required label="ZIP" defaultValue={address.zip} />
+            <TextField
+              label="Address Line 2"
+              defaultValue={address.line2}
+              onChange={(event) => {
+                setFormData({ ...formData, line2: event.target.value });
+              }}
+            />
+            <TextField
+              required
+              error={!formData.city}
+              label="City"
+              defaultValue={address.city}
+              onChange={(event) => {
+                setFormData({ ...formData, city: event.target.value });
+              }}
+            />
+            <TextField
+              required
+              error={!formData.state}
+              label="State"
+              defaultValue={address.state}
+              onChange={(event) => {
+                setFormData({ ...formData, state: event.target.value });
+              }}
+            />
+            <TextField
+              required
+              error={!formData.zip}
+              label="ZIP"
+              type="number"
+              defaultValue={address.zip}
+              onChange={(event) => {
+                setFormData({ ...formData, zip: parseInt(event.target.value) });
+              }}
+            />
           </div>
         </Box>
       ) : (

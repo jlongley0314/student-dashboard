@@ -9,7 +9,9 @@ export function StudentTableScreen() {
   return (
     <>
       {studentsQuery.isLoading ? (
-        <CircularProgress />
+        <CircularProgress
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+        />
       ) : (
         <StudentsTable students={studentsQuery.data} />
       )}

@@ -7,18 +7,20 @@ import { StudentAddressColumn } from "../components/StudentAddressColumn";
 
 export function StudentProfileScreen() {
   let { id } = useParams();
-  const { isLoading, data } = useGetStudentById(id);
+  const { data } = useGetStudentById(id);
+  console.log("data", data);
   return (
     <Container>
-      {isLoading ? (
-        <CircularProgress />
-      ) : (
+      {id && data ? (
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <StudentProfileHeader student={data} />
           </Grid>
           <Grid item xs={12}>
-            <StudentAddressColumn id={id} address={data.address[0]} />
+            <StudentAddressColumn
+              id={id}
+              address={data.address[data.address.length - 1]}
+            />
           </Grid>
           <Grid item xs={6}>
             {"allergies"}
@@ -27,6 +29,10 @@ export function StudentProfileScreen() {
             {"submissions"}
           </Grid>
         </Grid>
+      ) : (
+        <CircularProgress
+          style={{ position: "absolute", left: "50%", top: "50%" }}
+        />
       )}
     </Container>
   );
