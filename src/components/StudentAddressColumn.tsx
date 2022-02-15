@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Address } from "../types";
 import {
   Card,
@@ -10,6 +10,7 @@ import {
   LinearProgress,
 } from "@mui/material";
 import { useEditAddress } from "../mutations/useEditAddress";
+import { useQueryClient } from "react-query";
 
 type StudentAddressColumnProps = {
   address: Address;
@@ -21,6 +22,13 @@ export function StudentAddressColumn(props: StudentAddressColumnProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(address);
   const editAddressMutation = useEditAddress(id);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (editAddressMutation.isSuccess) {
+      queryClient.invalidateQueries(`student-${id}`);
+    }
+  }, [editAddressMutation.isSuccess]);
 
   function handleClick() {
     setIsEditing(!isEditing);
