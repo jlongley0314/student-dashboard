@@ -5,7 +5,6 @@ import { StudentsTable } from "../components/StudentsTable";
 
 export function StudentTableScreen() {
   const studentsQuery = useGetStudents();
-  console.log(studentsQuery.data);
   return (
     <>
       {studentsQuery.isLoading ? (

@@ -1,9 +1,19 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Container, Grid, CircularProgress } from "@mui/material";
+import {
+  Container,
+  Grid,
+  CircularProgress,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+} from "@mui/material";
+import { ExpandMore } from "@mui/icons-material";
 import { useGetStudentById } from "../queries/useGetStudentById";
 import { StudentProfileHeader } from "../components/StudentProfileHeader";
 import { StudentAddressColumn } from "../components/StudentAddressColumn";
+import { StudentAllergiesTable } from "../components/StudentAllergiesTable";
 
 export function StudentProfileScreen() {
   let { id } = useParams();
@@ -22,11 +32,29 @@ export function StudentProfileScreen() {
               address={data.address[data.address.length - 1]}
             />
           </Grid>
-          <Grid item xs={6}>
-            {"allergies"}
+          <Grid item xs={12}>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography>Allergies</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <StudentAllergiesTable id={id} allergies={data.allergies} />
+              </AccordionDetails>
+            </Accordion>
           </Grid>
-          <Grid item xs={6}>
-            {"submissions"}
+          <Grid item xs={12}>
+            <Accordion>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography>Submissions</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
+                  eget.
+                </Typography>
+              </AccordionDetails>
+            </Accordion>
           </Grid>
         </Grid>
       ) : (

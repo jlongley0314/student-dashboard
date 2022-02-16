@@ -17,6 +17,7 @@ export type Address = {
 };
 
 export type Allergy = {
+  id: string;
   severity: Severity;
   type: AllergyType;
   description: string;
