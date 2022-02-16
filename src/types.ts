@@ -9,6 +9,7 @@ export type Student = {
 };
 
 export type Address = {
+  id: string;
   line1: string;
   line2: string;
   city: string;
@@ -17,27 +18,28 @@ export type Address = {
 };
 
 export type Allergy = {
-  id: string;
-  severity: Severity;
-  type: AllergyType;
+  id?: string;
+  severity: Severity | string;
+  type: AllergyType | string;
   description: string;
 };
 
 export enum Severity {
-  Low,
-  Medium,
-  High,
+  Low = "Low",
+  Medium = "Medium",
+  High = "High",
 }
 
 export enum AllergyType {
-  Food,
-  Medicine,
-  Environmental,
+  Food = "Food",
+  Medicine = "Medicine",
+  Environmental = "Environmental",
 }
 
 export type Submission = {
+  id: string;
   assignmentName: string;
-  dueDate: Date;
+  dueDate: string;
   difficulty: number;
   teachersNotes: string;
 };

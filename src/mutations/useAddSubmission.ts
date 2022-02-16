@@ -1,17 +1,17 @@
 import { useMutation } from "react-query";
-import { Address } from "../types";
+import { Submission } from "../types";
 
-export function useEditAddress(id: string) {
-  return useMutation(async (address: Address) => {
+export function useAddSubmission(id: string) {
+  return useMutation(async (submission: Omit<Submission, "id">) => {
     const response = await fetch(
-      `https://613bb521110e000017a4570e.mockapi.io/students/${id}/address/${address.id}`,
+      `https://613bb521110e000017a4570e.mockapi.io/students/${id}/submissions`,
       {
-        method: "PUT",
+        method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(address),
+        body: JSON.stringify(submission),
       }
     );
 

@@ -15,10 +15,11 @@ import { useQueryClient } from "react-query";
 type StudentAddressColumnProps = {
   address: Address;
   id: string;
+  addressLoading: boolean;
 };
 
 export function StudentAddressColumn(props: StudentAddressColumnProps) {
-  const { address, id } = props;
+  const { address, id, addressLoading } = props;
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(address);
   const editAddressMutation = useEditAddress(id);
@@ -39,7 +40,7 @@ export function StudentAddressColumn(props: StudentAddressColumnProps) {
 
   return (
     <Card variant="outlined" style={{ padding: 10 }}>
-      {editAddressMutation.isLoading && <LinearProgress />}
+      {(editAddressMutation.isLoading || addressLoading) && <LinearProgress />}
       <Typography variant="h5" component="div" gutterBottom>
         Address:
       </Typography>

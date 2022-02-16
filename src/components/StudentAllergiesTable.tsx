@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Allergy } from "../types";
+import React, { useState, useEffect } from "react";
+import { Allergy, Severity, AllergyType } from "../types";
 import {
   TableContainer,
   Table,
@@ -11,31 +11,72 @@ import {
   Button,
   Modal,
   Typography,
-  TextField,
   Box,
+  Select,
+  InputLabel,
+  FormControl,
+  MenuItem,
+  TextField,
+  LinearProgress,
 } from "@mui/material";
 import { AddBox } from "@mui/icons-material";
+import { useEditAllergy } from "../mutations/useEditAllergy";
+import { useAddAllergy } from "../mutations/useAddAllergy";
+import { useQueryClient } from "react-query";
+
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 type StudentAllergiesTableProps = {
   allergies: Allergy[];
   id: string;
+  allergiesLoading: boolean;
+};
+
+const DefaultAllergy = {
+  id: undefined,
+  severity: Severity.Low,
+  type: AllergyType.Environmental,
+  description: "",
 };
 
 export function StudentAllergiesTable(props: StudentAllergiesTableProps) {
-  const { allergies, id } = props;
+  const { allergies, id, allergiesLoading } = props;
+  const addAllergyMutation = useAddAllergy(id);
+  const editAllergyMutation = useEditAllergy(id);
   const [modalOpen, setModalOpen] = useState(false);
-  const [allergyToEdit, setAllergyToEdit] = useState<Allergy | undefined>();
+  const [allergyFormData, setAllergyFormData] = useState<Allergy>(
+    DefaultAllergy
+  );
+  const queryClient = useQueryClient();
 
   function handleEditClick(allergy: Allergy) {
-    setAllergyToEdit(allergy);
+    setAllergyFormData(allergy);
     setModalOpen(true);
   }
 
   function handleAllergySubmit() {
-    if (allergyToEdit) {
-      setAllergyToEdit(undefined);
+    if (allergyFormData.id) {
+      editAllergyMutation.mutate(allergyFormData);
+    } else {
+      addAllergyMutation.mutate(allergyFormData);
     }
+    setAllergyFormData(DefaultAllergy);
+    setModalOpen(false);
   }
+
+  useEffect(() => {
+    queryClient.invalidateQueries(`student-${id}`);
+  }, [editAllergyMutation.isSuccess, addAllergyMutation.isSuccess]);
 
   return (
     <>
@@ -47,6 +88,9 @@ export function StudentAllergiesTable(props: StudentAllergiesTableProps) {
       >
         Add Allergy
       </Button>
+      {(editAllergyMutation.isLoading ||
+        addAllergyMutation.isLoading ||
+        allergiesLoading) && <LinearProgress />}
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
@@ -84,20 +128,75 @@ export function StudentAllergiesTable(props: StudentAllergiesTableProps) {
           </TableBody>
         </Table>
       </TableContainer>
-      <Modal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box>
-          <Typography variant="h6" component="h2">
-            {allergyToEdit ? "Edit Allergy" : "Create Allergy"}
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <Box sx={style}>
+          <Typography variant="h6" component="h2" gutterBottom>
+            Allergy
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
-          <Button variant="contained">Submit</Button>
+          <Box component="form" noValidate autoComplete="off">
+            <FormControl fullWidth style={{ marginBottom: 10 }}>
+              <InputLabel>Severity</InputLabel>
+              <Select
+                value={
+                  allergyFormData?.severity
+                    ? allergyFormData.severity
+                    : undefined
+                }
+                label="Severity"
+                onChange={(event) => {
+                  {
+                    setAllergyFormData({
+                      ...allergyFormData,
+                      severity: event.target.value,
+                    });
+                  }
+                }}
+              >
+                <MenuItem value={Severity.Low}>Low</MenuItem>
+                <MenuItem value={Severity.Medium}>Medium</MenuItem>
+                <MenuItem value={Severity.High}>High</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth style={{ marginBottom: 10 }}>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={allergyFormData?.type ? allergyFormData.type : undefined}
+                label="Type"
+                onChange={(event) => {
+                  {
+                    setAllergyFormData({
+                      ...allergyFormData,
+                      type: event.target.value,
+                    });
+                  }
+                }}
+              >
+                <MenuItem value={AllergyType.Environmental}>
+                  Environmental
+                </MenuItem>
+                <MenuItem value={AllergyType.Food}>Food</MenuItem>
+                <MenuItem value={AllergyType.Medicine}>Medicine</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Description"
+              defaultValue={allergyFormData.description}
+              style={{ marginBottom: 10 }}
+              onChange={(event) => {
+                setAllergyFormData({
+                  ...allergyFormData,
+                  description: event.target.value,
+                });
+              }}
+            />
+          </Box>
+          <Button
+            variant="contained"
+            style={{ marginTop: 15 }}
+            onClick={handleAllergySubmit}
+          >
+            Submit
+          </Button>
         </Box>
       </Modal>
     </>

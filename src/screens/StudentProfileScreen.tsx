@@ -14,11 +14,11 @@ import { useGetStudentById } from "../queries/useGetStudentById";
 import { StudentProfileHeader } from "../components/StudentProfileHeader";
 import { StudentAddressColumn } from "../components/StudentAddressColumn";
 import { StudentAllergiesTable } from "../components/StudentAllergiesTable";
+import { StudentSubmissionsTable } from "../components/StudentSubmissionsTable";
 
 export function StudentProfileScreen() {
   let { id } = useParams();
-  const { data } = useGetStudentById(id);
-  console.log("data", data);
+  const { data, isLoading } = useGetStudentById(id);
   return (
     <Container>
       {id && data ? (
@@ -29,7 +29,8 @@ export function StudentProfileScreen() {
           <Grid item xs={12}>
             <StudentAddressColumn
               id={id}
-              address={data.address[data.address.length - 1]}
+              address={data.address[0]}
+              addressLoading={isLoading}
             />
           </Grid>
           <Grid item xs={12}>
@@ -38,7 +39,11 @@ export function StudentProfileScreen() {
                 <Typography>Allergies</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <StudentAllergiesTable id={id} allergies={data.allergies} />
+                <StudentAllergiesTable
+                  id={id}
+                  allergies={data.allergies}
+                  allergiesLoading={isLoading}
+                />
               </AccordionDetails>
             </Accordion>
           </Grid>
@@ -48,11 +53,11 @@ export function StudentProfileScreen() {
                 <Typography>Submissions</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-                  eget.
-                </Typography>
+                <StudentSubmissionsTable
+                  id={id}
+                  submissions={data.submissions}
+                  submissionsLoading={isLoading}
+                />
               </AccordionDetails>
             </Accordion>
           </Grid>
