@@ -53,9 +53,10 @@ export function StudentAddressColumn(props: StudentAddressColumnProps) {
           noValidate
           autoComplete="off"
         >
-          <div>
+          <div data-testid="form-box">
             <TextField
               required
+              data-testid="addressLine1FormData"
               error={!formData.line1}
               label="Address Line 1"
               defaultValue={address.line1}

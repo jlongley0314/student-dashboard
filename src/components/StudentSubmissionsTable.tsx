@@ -73,6 +73,9 @@ export function StudentSubmissionsTable(props: StudentAllergiesTableProps) {
   return (
     <>
       {submissionMutation.isLoading && <LinearProgress />}
+      <Typography variant="h5" component="div" gutterBottom>
+        {`Total Submissions: ${submissions.length}`}
+      </Typography>
       <Button
         variant="contained"
         endIcon={<AddBox />}
